@@ -1,0 +1,32 @@
+version: '3'
+services:
+  flask_api:
+    build:
+      context: ./flaskApi
+    container_name: flask_api
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./flaskApi/pdf:/app/pdf
+      - ./flaskApi/db:/app/db
+    environment:
+      - CHROMA_DB_DIR=/app/db
+    depends_on:
+      - ollama
+      - chroma
+
+  chroma:
+    image: chromadb/chroma
+    container_name: chroma_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./flaskApi/db:/app/db
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./ollama_models:/root/.ollama
